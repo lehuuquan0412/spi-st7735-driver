@@ -1,0 +1,74 @@
+diff --git a/arch/arm/boot/dts/am335x-bone-common.dtsi b/arch/arm/boot/dts/am335x-bone-common.dtsi
+index ae9c55779c30..6ece9a7902c3 100644
+--- a/arch/arm/boot/dts/am335x-bone-common.dtsi
++++ b/arch/arm/boot/dts/am335x-bone-common.dtsi
+@@ -331,6 +331,12 @@
+ 			reg = <0 0x100>;
+ 		};
+ 	};
++
++	i2c_ex: i2c_ex@35 {
++		compatible = "i2c_ex_compatible";
++		reg = <0x35>;
++		status = "okay";
++	};
+ };
+ 
+ 
+diff --git a/arch/arm/boot/dts/am335x-boneblack.dts b/arch/arm/boot/dts/am335x-boneblack.dts
+index cb9cee378870..b5d42188df78 100644
+--- a/arch/arm/boot/dts/am335x-boneblack.dts
++++ b/arch/arm/boot/dts/am335x-boneblack.dts
+@@ -172,3 +172,122 @@
+ 		"NC",
+ 		"NC";
+ };
+
++
++&ocp {
++	P9_28_pinmux { status = "disabled"; };	/* P9_28 (C12) mcasp0_ahclkr.spi1_cs0 */
++	P9_30_pinmux { status = "disabled"; };	/* P9_30 (D12) mcasp0_axr0.spi1_d1 */
++	P9_29_pinmux { status = "disabled"; };	/* P9_29 (B13) mcasp0_fsx.spi1_d0 */
++	P9_31_pinmux { status = "disabled"; };	/* P9_31 (A13) mcasp0_aclkx.spi1_sclk */
++};
++
++&am33xx_pinmux {
++	lcd_spi1_pins: lcd_spi1_pins {
++		pinctrl-single,pins = <
++			AM33XX_PADCONF(AM335X_PIN_MCASP0_ACLKX, PIN_INPUT, MUX_MODE3)	/* P9_31 (A13) mcasp0_aclkx.spi1_sclk */
++			AM33XX_PADCONF(AM335X_PIN_MCASP0_FSX, PIN_INPUT, MUX_MODE3)	/* P9_29 (B13) mcasp0_fsx.spi1_d0 */
++			AM33XX_PADCONF(AM335X_PIN_MCASP0_AXR0, PIN_INPUT, MUX_MODE3)	/* P9_30 (D12) mcasp0_axr0.spi1_d1 */
++			AM33XX_PADCONF(AM335X_PIN_MCASP0_AHCLKR, PIN_INPUT, MUX_MODE3)	/* P9_28 (C12) mcasp0_ahclkr.spi1_cs0 */
++		>;
++	};
++}
++
++&spi1 {
++	status = "okay";
++	pinctrl-names = "default";
++	pinctrl-0 = <&lcd_spi1_pins>;
++	cs-gpios = <&gpio3 17 GPIO_ACTIVE_HIGH>;
++
++	lcd: spi@0 {
++		compatible = "lcd";
++		reg = <0>;
++		spi-max-frequency = <15000000>;
++		dcx-gpios = <&gpio0 23 GPIO_ACTIVE_HIGH>;
++		rsx-gpios = <&gpio0 26 GPIO_ACTIVE_HIGH>;
++		status = "okay";
++	};
++};
++
++/ {
++	keyboard {
++		compatible = "keyboard";
++		up-gpios = <&gpio2 2 GPIO_ACTIVE_HIGH>;
++		down-gpios = <&gpio2 3 GPIO_ACTIVE_HIGH>;
++		left-gpios = <&gpio2 4 GPIO_ACTIVE_HIGH>;
++		right-gpios = <&gpio2 5 GPIO_ACTIVE_HIGH>;
++		interrupt-parent = <&gpio2>;
++		interrupts = <2 IRQ_TYPE_EDGE_RISING>, <3 IRQ_TYPE_EDGE_RISING>, <4 IRQ_TYPE_EDGE_RISING>, <5 IRQ_TYPE_EDGE_RISING>;
++		status = "okay";
++	};
++};
+
